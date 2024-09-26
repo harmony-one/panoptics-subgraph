@@ -1,24 +1,5 @@
-type ApprovalForAll @entity(immutable: true) {
-  id: Bytes!
-  account: Bytes! # address
-  operator: Bytes! # address
-  approved: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type OwnerChanged @entity(immutable: true) {
-  id: Bytes!
-  oldOwner: Bytes! # address
-  newOwner: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type PoolDeployed @entity(immutable: true) {
-  id: Bytes!
+type Pool @entity {
+  id: ID!
   poolAddress: Bytes! # address
   uniswapPool: Bytes! # address
   collateralTracker0: Bytes! # address
@@ -32,34 +13,40 @@ type PoolDeployed @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type TransferBatch @entity(immutable: true) {
-  id: Bytes!
-  operator: Bytes! # address
-  from: Bytes! # address
-  to: Bytes! # address
-  ids: [BigInt!]! # uint256[]
-  values: [BigInt!]! # uint256[]
+type Position @entity {
+  id: ID!
+  owner: Bytes!
+  tokenId: BigInt!
+  size: BigInt!
+  pool: Pool! # link position to pools
+  poolUtilizations: BigInt!
+  tick: Int!
+  active: Boolean!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
-type TransferSingle @entity(immutable: true) {
-  id: Bytes!
-  operator: Bytes! # address
-  from: Bytes! # address
-  to: Bytes! # address
-  PanopticFactory_id: BigInt! # uint256
-  value: BigInt! # uint256
+type Liquidation @entity {
+  id: ID!
+  liquidator: Bytes!
+  liquidatee: Bytes!
+  bonusAmounts: BigInt!
+  tick: Int!
+  pool: Pool! # Link liquidation to pool
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
-type URI @entity(immutable: true) {
-  id: Bytes!
-  value: String! # string
-  PanopticFactory_id: BigInt! # uint256
+type ForcedExercise @entity {
+  id: ID!
+  exercisor: Bytes!
+  user: Bytes!
+  tokenId: BigInt!
+  exerciseFee: BigInt!
+  tick: Int!
+  pool: Pool! # Link forced exercise to pool
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

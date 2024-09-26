@@ -8,7 +8,7 @@ dataSources:
     name: PanopticFactory
     network: harmony
     source:
-      address: "0x3b34a68a57b26Eb6668EFE1A562C51F3bf71feE6"
+      address: "0x3b34a68a57b26Eb6668EFE1A562C51F3bf71feE6" # update to the actual address
       abi: PanopticFactory
       startBlock: 62356124
     mapping:
@@ -16,26 +16,41 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - ApprovalForAll
-        - OwnerChanged
-        - PoolDeployed
-        - TransferBatch
-        - TransferSingle
-        - URI
+        - Pool
       abis:
         - name: PanopticFactory
           file: ./abis/PanopticFactory.json
       eventHandlers:
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
-        - event: OwnerChanged(indexed address,indexed address)
-          handler: handleOwnerChanged
         - event: PoolDeployed(indexed address,indexed address,address,address,uint256,indexed uint256,uint256,uint256)
           handler: handlePoolDeployed
-        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
-          handler: handleTransferBatch
-        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
-          handler: handleTransferSingle
-        - event: URI(string,indexed uint256)
-          handler: handleURI
-      file: ./src/panoptic-factory.ts
+      file: ./src/panopticFactory.ts
+
+templates:
+  - name: PanopticPool
+    kind: ethereum/contract
+    network: harmony
+    source:
+      abi: PanopticPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Position
+        - Liquidation
+        - ForcedExercise
+      abis:
+        - name: PanopticPool
+          file: ./abis/PanopticPool.json
+      eventHandlers:
+        - event: AccountLiquidated(indexed address,indexed address,int256,int24)
+          handler: handleAccountLiquidated
+        - event: ForcedExercised(indexed address,indexed address,indexed uint256,int256,int24)
+          handler: handleForcedExercised
+        - event: OptionMinted(indexed address,uint128,indexed uint256,int24,uint128)
+          handler: handleOptionMinted
+        - event: OptionBurnt(indexed address,uint128,indexed uint256,int24,int256)
+          handler: handleOptionBurnt
+        - event: OptionRolled(indexed address,uint128,indexed uint256,indexed uint256,int24,uint128,int256)
+          handler: handleOptionRolled
+      file: ./src/panopticPool.ts
